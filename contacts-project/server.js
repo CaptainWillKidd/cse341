@@ -1,0 +1,37 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const port = process.env.PORT || 3000;
+
+const db = require('./db/connection');
+
+app.use(cors());
+app.use(express.json());
+
+// Basic health route
+app.get('/', (req, res) => {
+  res.send('Contacts API is running');
+});
+
+// mount contacts routes only after DB connection
+app.use('/contacts', (req, res, next) => {
+  // if DB not connected, still allow graceful error later
+  next();
+});
+
+// Try to connect to MongoDB then mount routes
+db.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('Connected to MongoDB');
+    const contactsRouter = require('./routes/contacts');
+    app.use('/contacts', contactsRouter);
+    app.listen(port, () => console.log(`Server listening on port ${port}`));
+  })
+  .catch((err) => {
+    console.error('Could not connect to MongoDB:', err.message);
+    // Still start server so developer can see error and add .env
+    const contactsRouter = require('./routes/contacts');
+    app.use('/contacts', contactsRouter);
+    app.listen(port, () => console.log(`Server listening on port ${port} (no DB)`));
+  });

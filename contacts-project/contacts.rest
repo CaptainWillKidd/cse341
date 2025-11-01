@@ -1,0 +1,6 @@
+### Contacts REST tests
+
+GET http://localhost:3000/contacts
+
+### Get a single contact (replace :id with a real id from the previous response)
+GET http://localhost:3000/contacts/:id
