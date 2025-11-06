@@ -9,13 +9,34 @@ const port = process.env.PORT || 3000;
 
 const db = require('./db/connection');
 
-// Configure CORS
+// Add headers before the routes are defined
+app.use(function (req, res, next) {
+    // Allow requests from any origin
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    
+    // Set to true if you need the website to include cookies in the requests
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    
+    // Pass to next layer of middleware
+    next();
+});
+
+// Enable CORS for all requests
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://cse341-g10e.onrender.com', 'http://localhost:8080'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: '*', // Allow all origins
+  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
 
+// Parse JSON bodies
 app.use(express.json());
 
 // Swagger UI route
