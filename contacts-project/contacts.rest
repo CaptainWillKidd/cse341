@@ -1,6 +1,34 @@
 ### Contacts REST tests
 
+### Get all contacts
 GET http://localhost:3000/contacts
 
 ### Get a single contact (replace :id with a real id from the previous response)
 GET http://localhost:3000/contacts/:id
+
+### Create a new contact
+POST http://localhost:3000/contacts
+Content-Type: application/json
+
+{
+    "firstName": "João",
+    "lastName": "Silva",
+    "email": "joao@example.com",
+    "favoriteColor": "blue",
+    "birthday": "1990-01-01"
+}
+
+### Update a contact (replace :id with a real id)
+PUT http://localhost:3000/contacts/:id
+Content-Type: application/json
+
+{
+    "firstName": "João",
+    "lastName": "Silva",
+    "email": "joao.silva@example.com",
+    "favoriteColor": "green",
+    "birthday": "1990-01-01"
+}
+
+### Delete a contact (replace :id with a real id)
+DELETE http://localhost:3000/contacts/:id
