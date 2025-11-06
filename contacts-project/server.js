@@ -9,7 +9,13 @@ const port = process.env.PORT || 3000;
 
 const db = require('./db/connection');
 
-app.use(cors());
+// Configure CORS
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://cse341-g10e.onrender.com', 'http://localhost:8080'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 // Swagger UI route
