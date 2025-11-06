@@ -6,6 +6,13 @@ const swaggerSpec = require('./swagger');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === 'production';
+
+console.log('Starting server with config:', {
+  nodeEnv: process.env.NODE_ENV,
+  port: port,
+  mongoUri: process.env.MONGO_URI ? '(set)' : '(not set)'
+});
 
 const db = require('./db/connection');
 

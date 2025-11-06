@@ -10,10 +10,8 @@ const options = {
     },
     servers: [
       {
-        url: process.env.NODE_ENV === 'production'
-          ? 'https://cse341-g10e.onrender.com'  // Your Render URL
-          : 'http://localhost:3000',
-        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Local development server'
+        url: '/',  // Use relative URL
+        description: 'API Server'
       }
     ],
   },
