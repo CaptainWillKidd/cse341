@@ -8,6 +8,12 @@ async function connect(uri) {
   client = new MongoClient(uri);
   await client.connect();
   db = client.db();
+  try {
+    // Log which database name was chosen by the driver (helps debugging in production)
+    console.log('Connected to MongoDB, using DB:', db.databaseName);
+  } catch (e) {
+    // ignore logging errors
+  }
 }
 
 function getDB() {
