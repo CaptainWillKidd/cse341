@@ -17,23 +17,31 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/', (req, res) => res.send('CRUD Project API running'));
 
-// Mount routes after DB connection
+// Require routers (can be mounted with a DB-check middleware)
+const gamesRouter = require('./routes/games');
+const platformsRouter = require('./routes/platforms');
+
+// Middleware to check DB connectivity and return 503 if not connected
+function ensureDB(req, res, next) {
+  if (!db.isConnected()) {
+    return res.status(503).json({ error: 'Database not connected' });
+  }
+  next();
+}
+
+// Mount routes with the DB-check middleware
+app.use('/games', ensureDB, gamesRouter);
+app.use('/platforms', ensureDB, platformsRouter);
+
+// Try to connect to MongoDB then start server
 db.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('Connected to MongoDB');
-    const gamesRouter = require('./routes/games');
-    const platformsRouter = require('./routes/platforms');
-    app.use('/games', gamesRouter);
-    app.use('/platforms', platformsRouter);
     app.listen(port, () => console.log(`Server listening on port ${port}`));
   })
   .catch((err) => {
-    console.error('DB connect error:', err.message);
-    // still mount routes (they will throw if db is required)
-    const gamesRouter = require('./routes/games');
-    const platformsRouter = require('./routes/platforms');
-    app.use('/games', gamesRouter);
-    app.use('/platforms', platformsRouter);
+    console.error('DB connect error:', err.stack || err);
+    // still start server so developer can see message and app remains up
     app.listen(port, () => console.log(`Server listening on port ${port} (no DB)`));
   });
 

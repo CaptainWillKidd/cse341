@@ -19,4 +19,8 @@ function getCollection(name) {
   return getDB().collection(name);
 }
 
-module.exports = { connect, getDB, getCollection };
+function isConnected() {
+  return !!db;
+}
+
+module.exports = { connect, getDB, getCollection, isConnected };
