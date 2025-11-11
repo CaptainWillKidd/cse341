@@ -26,8 +26,14 @@ router.get('/', async (req, res) => {
     const docs = await collection.find({}).toArray();
     res.json(docs);
   } catch (err) {
-    console.error('GET /games error:', err.message);
-    res.status(500).json({ error: 'Unable to fetch games' });
+    // Log full stack for debugging
+    console.error('GET /games error:', err.stack || err);
+    // In production return generic message, otherwise include error details to help debug
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).json({ error: 'Unable to fetch games' });
+    } else {
+      res.status(500).json({ error: 'Unable to fetch games', details: err.message });
+    }
   }
 });
 
@@ -100,8 +106,12 @@ router.post('/', async (req, res) => {
     const result = await collection.insertOne({ title, developer, releaseDate, genre, platform });
     res.status(201).json({ id: result.insertedId });
   } catch (err) {
-    console.error('POST /games error:', err.message);
-    res.status(500).json({ error: 'Unable to create game' });
+    console.error('POST /games error:', err.stack || err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).json({ error: 'Unable to create game' });
+    } else {
+      res.status(500).json({ error: 'Unable to create game', details: err.message });
+    }
   }
 });
 
@@ -153,8 +163,12 @@ router.put('/:id', async (req, res) => {
     if (result.matchedCount === 0) return res.status(404).json({ error: 'Game not found' });
     res.status(204).send();
   } catch (err) {
-    console.error('PUT /games/:id error:', err.message);
-    res.status(500).json({ error: 'Unable to update game' });
+    console.error('PUT /games/:id error:', err.stack || err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).json({ error: 'Unable to update game' });
+    } else {
+      res.status(500).json({ error: 'Unable to update game', details: err.message });
+    }
   }
 });
 
@@ -185,8 +199,12 @@ router.delete('/:id', async (req, res) => {
     if (result.deletedCount === 0) return res.status(404).json({ error: 'Game not found' });
     res.status(204).send();
   } catch (err) {
-    console.error('DELETE /games/:id error:', err.message);
-    res.status(500).json({ error: 'Unable to delete game' });
+    console.error('DELETE /games/:id error:', err.stack || err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).json({ error: 'Unable to delete game' });
+    } else {
+      res.status(500).json({ error: 'Unable to delete game', details: err.message });
+    }
   }
 });
 

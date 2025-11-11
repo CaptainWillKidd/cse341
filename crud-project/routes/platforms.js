@@ -26,8 +26,12 @@ router.get('/', async (req, res) => {
     const docs = await collection.find({}).toArray();
     res.json(docs);
   } catch (err) {
-    console.error('GET /platforms error:', err.message);
-    res.status(500).json({ error: 'Unable to fetch platforms' });
+    console.error('GET /platforms error:', err.stack || err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).json({ error: 'Unable to fetch platforms' });
+    } else {
+      res.status(500).json({ error: 'Unable to fetch platforms', details: err.message });
+    }
   }
 });
 
@@ -58,8 +62,12 @@ router.get('/:id', async (req, res) => {
     if (!doc) return res.status(404).json({ error: 'Platform not found' });
     res.json(doc);
   } catch (err) {
-    console.error('GET /platforms/:id error:', err.message);
-    res.status(500).json({ error: 'Unable to fetch platform' });
+    console.error('GET /platforms/:id error:', err.stack || err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).json({ error: 'Unable to fetch platform' });
+    } else {
+      res.status(500).json({ error: 'Unable to fetch platform', details: err.message });
+    }
   }
 });
 
@@ -96,8 +104,12 @@ router.post('/', async (req, res) => {
     const result = await collection.insertOne({ name, manufacturer, releaseYear });
     res.status(201).json({ id: result.insertedId });
   } catch (err) {
-    console.error('POST /platforms error:', err.message);
-    res.status(500).json({ error: 'Unable to create platform' });
+    console.error('POST /platforms error:', err.stack || err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).json({ error: 'Unable to create platform' });
+    } else {
+      res.status(500).json({ error: 'Unable to create platform', details: err.message });
+    }
   }
 });
 
@@ -145,8 +157,12 @@ router.put('/:id', async (req, res) => {
     if (result.matchedCount === 0) return res.status(404).json({ error: 'Platform not found' });
     res.status(204).send();
   } catch (err) {
-    console.error('PUT /platforms/:id error:', err.message);
-    res.status(500).json({ error: 'Unable to update platform' });
+    console.error('PUT /platforms/:id error:', err.stack || err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).json({ error: 'Unable to update platform' });
+    } else {
+      res.status(500).json({ error: 'Unable to update platform', details: err.message });
+    }
   }
 });
 
@@ -177,8 +193,12 @@ router.delete('/:id', async (req, res) => {
     if (result.deletedCount === 0) return res.status(404).json({ error: 'Platform not found' });
     res.status(204).send();
   } catch (err) {
-    console.error('DELETE /platforms/:id error:', err.message);
-    res.status(500).json({ error: 'Unable to delete platform' });
+    console.error('DELETE /platforms/:id error:', err.stack || err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).json({ error: 'Unable to delete platform' });
+    } else {
+      res.status(500).json({ error: 'Unable to delete platform', details: err.message });
+    }
   }
 });
 
