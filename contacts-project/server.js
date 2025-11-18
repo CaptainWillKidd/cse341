@@ -1,4 +1,5 @@
 require('dotenv').config();
+const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
@@ -15,6 +16,7 @@ console.log('Starting server with config:', {
 });
 
 const db = require('./db/connection');
+const { default: mongoose } = require('mongoose');
 
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
@@ -61,17 +63,29 @@ app.use('/contacts', (req, res, next) => {
 });
 
 // Try to connect to MongoDB then mount routes
-db.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGODB_URL)
   .then(() => {
-    console.log('Connected to MongoDB');
-    const contactsRouter = require('./routes/contacts');
-    app.use('/contacts', contactsRouter);
-    app.listen(port, () => console.log(`Server listening on port ${port}`));
+    app.listen(process.env.PORT || 3000, () => {
+      console.log(
+        "Database is listening and node Running at port " +
+          (process.env.PORT || 3000)
+      );
+    });
   })
   .catch((err) => {
-    console.error('Could not connect to MongoDB:', err.message);
-    // Still start server so developer can see error and add .env
-    const contactsRouter = require('./routes/contacts');
-    app.use('/contacts', contactsRouter);
-    app.listen(port, () => console.log(`Server listening on port ${port} (no DB)`));
-  });
+    console.log("Error conecting Mongoose", err);
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack || err.message || err);
+  res.status(500).json({ message: err.message || "Internal server error" });
+});
+ 
+//Detect Errors didn't cath for try catch
+process.on("uncaughtExceptiob", (err, origib) => {
+  console.log(
+    process.stderr.fd,
+    `Caught exception: ${err}\n` + `Exception origin: ${origin}`
+  );
+});
