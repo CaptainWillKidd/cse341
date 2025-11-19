@@ -1,6 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const db = require('../db/connection');
+const { ObjectId } = require('mongodb');
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -11,14 +12,25 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
 }
 
 passport.serializeUser((user, done) => {
-  // store the user's id in session
-  done(null, user._id);
+  // store the user's id in session as a string
+  try {
+    const id = user && user._id ? String(user._id) : null;
+    done(null, id);
+  } catch (e) {
+    done(e);
+  }
 });
 
 passport.deserializeUser(async (id, done) => {
   try {
+    console.log('passport.deserializeUser called with id type:', typeof id, 'value:', id);
     const users = db.getCollection('users');
-    const user = await users.findOne({ _id: typeof id === 'string' ? require('mongodb').ObjectId(id) : id });
+    let queryId = id;
+    if (typeof id === 'string') {
+      // convert string back to ObjectId
+      queryId = new ObjectId(id);
+    }
+    const user = await users.findOne({ _id: queryId });
     done(null, user || null);
   } catch (err) {
     done(err);

@@ -19,8 +19,30 @@ async function run() {
 
     // sample games
     const g = [
-      { title: 'Astro Adventure', developer: 'Studio A', releaseDate: '2021-11-12', genre: 'Platformer', platform: pRes.insertedIds[0] },
-      { title: 'Speed Racer', developer: 'Studio B', releaseDate: '2022-06-01', genre: 'Racing', platform: pRes.insertedIds[1] }
+      {
+        title: 'Astro Adventure',
+        developer: 'Studio A',
+        releaseDate: '2021-11-12',
+        genre: 'Platformer',
+        platform: pRes.insertedIds[0],
+        description: 'A charming 3D platformer with exploration and puzzles.',
+        publisher: 'IndiePub',
+        rating: 8.5,
+        tags: ['platformer', 'singleplayer', '3d'],
+        metascore: 82
+      },
+      {
+        title: 'Speed Racer',
+        developer: 'Studio B',
+        releaseDate: '2022-06-01',
+        genre: 'Racing',
+        platform: pRes.insertedIds[1],
+        description: 'High-speed arcade racing with online leaderboards.',
+        publisher: 'FastGames',
+        rating: 7.9,
+        tags: ['racing', 'multiplayer', 'arcade'],
+        metascore: 76
+      }
     ];
     const gRes = await games.insertMany(g);
     console.log('Inserted games:', Object.values(gRes.insertedIds));
