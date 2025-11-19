@@ -75,6 +75,8 @@ router.get('/:id', async (req, res) => {
  *   post:
  *     tags: [Games]
  *     summary: Create a new game
+ *     security:
+ *       - cookieAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -95,8 +97,12 @@ router.get('/:id', async (req, res) => {
  *     responses:
  *       201:
  *         description: Created
+ *       401:
+ *         description: Authentication required
  */
-router.post('/', async (req, res) => {
+const { ensureAuthenticated } = require('../middleware/auth');
+
+router.post('/', ensureAuthenticated, async (req, res) => {
   const { title, developer, releaseDate, genre, platform } = req.body;
   if (!title || !developer || !releaseDate || !genre || !platform) {
     return res.status(400).json({ error: 'All fields required: title, developer, releaseDate, genre, platform' });
@@ -121,6 +127,8 @@ router.post('/', async (req, res) => {
  *   put:
  *     tags: [Games]
  *     summary: Update a game
+ *     security:
+ *       - cookieAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -149,8 +157,10 @@ router.post('/', async (req, res) => {
  *         description: Updated successfully
  *       404:
  *         description: Game not found
+ *       401:
+ *         description: Authentication required
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', ensureAuthenticated, async (req, res) => {
   const id = req.params.id;
   if (!ObjectId.isValid(id)) return res.status(400).json({ error: 'Invalid id format' });
   const { title, developer, releaseDate, genre, platform } = req.body;
@@ -178,6 +188,8 @@ router.put('/:id', async (req, res) => {
  *   delete:
  *     tags: [Games]
  *     summary: Delete a game
+ *     security:
+ *       - cookieAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -189,8 +201,10 @@ router.put('/:id', async (req, res) => {
  *         description: Deleted successfully
  *       404:
  *         description: Game not found
+ *       401:
+ *         description: Authentication required
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', ensureAuthenticated, async (req, res) => {
   const id = req.params.id;
   if (!ObjectId.isValid(id)) return res.status(400).json({ error: 'Invalid id format' });
   try {

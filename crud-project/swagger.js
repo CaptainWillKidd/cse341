@@ -10,7 +10,17 @@ const options = {
     },
     servers: [
       { url: '/', description: 'API server (relative)' }
-    ]
+    ],
+    components: {
+      securitySchemes: {
+        cookieAuth: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'connect.sid',
+          description: 'Session cookie authentication. Use /auth/google to authenticate.'
+        }
+      }
+    }
   },
   apis: ['./routes/*.js']
 };
